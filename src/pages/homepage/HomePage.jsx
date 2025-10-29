@@ -6,7 +6,7 @@ import {
   HiOutlineRss
 } from "react-icons/hi";
 import Footer from "../components/Footer";
-import CircleMovilMenu from "./components/CircleMovilMenu";
+import CircleMovilMenu from "../components/CircleMovilMenu";
 import LNGSelector from "../components/LNGSelector";
 
 function HomePage() {
@@ -35,11 +35,11 @@ function HomePage() {
               <HiOutlineDocumentText className="w-6 h-6" />
               <span>{t("experience")}</span>
             </a>
-            <a href="#" className="flex items-center space-x-2 text-gray-300 hover:text-white">
+            <a href="/contact" className="flex items-center space-x-2 text-gray-300 hover:text-white">
               <HiOutlineMail className="w-6 h-6" />
               <span>{t("contact")}</span>
             </a>
-            <a href="#" className="flex items-center space-x-2 text-gray-300 hover:text-white">
+            <a href="/blog" className="flex items-center space-x-2 text-gray-300 hover:text-white">
               <HiOutlineRss className="w-6 h-6" />
               <span>{t("blog")}</span>
             </a>

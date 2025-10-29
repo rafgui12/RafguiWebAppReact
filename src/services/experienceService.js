@@ -23,9 +23,8 @@ const useExperienceData = (path) => {
       setLoading(false);
     });
 
-    // Limpieza: se desuscribe del listener al desmontar
     return () => off(dataRef);
-  }, [path]); // Se re-ejecuta si la 'path' cambia
+  }, [path]);
 
   return { items, loading };
 };

@@ -55,13 +55,13 @@ function CircleMovilMenu() {
                             <HiOutlineDocumentText className="w-7 h-7" />
                         </a>
                         <a
-                            href="#"
+                            href="/contact"
                             className="absolute bottom-3 left-1/2 -translate-x-1/2 text-black hover:text-purple-600"
                         >
                             <HiOutlineMail className="w-7 h-7" />
                         </a>
                         <a
-                            href="#"
+                            href="/blog"
                             className="absolute left-3 top-1/2 -translate-y-1/2 text-black hover:text-purple-600"
                         >
                             <HiOutlineRss className="w-7 h-7" />

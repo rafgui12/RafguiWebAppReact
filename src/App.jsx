@@ -3,6 +3,10 @@ import { Routes, Route } from "react-router"
 import HomePage from "./pages/homepage/HomePage.jsx"
 import PortfolioPage from "./pages/portfolio/PortfolioPage.jsx"
 import ExperiencePage from "./pages/experience/ExperiencePage.jsx"
+import ContactPage from "./pages/contact/ContactPage.jsx"
+import BlogPage from "./pages/Blog/BlogPage.jsx"
+import BlogPostPage from "./pages/Blog/BlogPostPage.jsx"
+import NotFoundPage from "./pages/NotFoundPage/NotFoundPage.jsx"
 
 
 function App() {
@@ -13,7 +17,10 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/portfolio" element={<PortfolioPage />} />
         <Route path="/experience" element={<ExperiencePage />} />
-        <Route path="*" element={<h1 className='text-red-600'> 404 NotFound</h1>} />;
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/blog" element={<BlogPage />} />
+        <Route path="/blog/:postId" element={<BlogPostPage />} />
+        <Route path="*" element={<NotFoundPage />} />;
 
       </Routes>
     </>

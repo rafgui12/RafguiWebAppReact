@@ -10,7 +10,7 @@ function PortfolioPage() {
   if (loading) {
     return (
       <div className="relative min-h-screen bg-black text-white flex justify-center items-center">
-        <h1 className="text-3xl">Loading projects...</h1>
+        <h1 className="text-3xl">Loading...</h1>
       </div>
     );
   }
