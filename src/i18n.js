@@ -30,6 +30,7 @@ const translations = {
     blog_no_posts_available: "No posts available at the moment.",
     blog_show_all: "Show all posts",
     //BlogSideBar
+    blog_filter_posts: "Filter Posts",
     blog_categories: "Categories",
     blog_years: "Years",
     blog_written_by: "Written by",
@@ -89,6 +90,7 @@ const translations = {
     blog_no_posts_available: "No hay posts disponibles por el momento.",
     blog_show_all: "Mostrar todos los posts",
     //BlogSideBar
+    blog_filter_posts: "Filtrar Posts",
     blog_categories: "Categorías",
     blog_years: "Años",
     blog_written_by: "Escrito por",

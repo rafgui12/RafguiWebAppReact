@@ -5,6 +5,7 @@ import { HiOutlineFilter, HiOutlineHome, HiXCircle } from 'react-icons/hi';
 import CircleMovilMenu from '../components/CircleMovilMenu';
 import { useBlogPosts } from '../../services/blogService';
 import BlogSidebar from './components/BlogSidebar';
+import MobileFilterPanel from './components/MobileFilterPanel';
 import { Link } from 'react-router';
 
 // --- COMPONENTE PRINCIPAL ---
@@ -13,40 +14,115 @@ function BlogPage() {
   const { posts, loading } = useBlogPosts();
 
   const [activeFilter, setActiveFilter] = useState({ type: null, value: null });
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
   const handleFilterChange = (type, value) => {
     setActiveFilter({ type, value });
   };
 
+  const handleMobileFilterChange = (type, value) => {
+    handleFilterChange(type, value); // Aplica el filtro
+    setIsMobileFilterOpen(false);      // Cierra el panel
+  };
+
   const filteredPosts = useMemo(() => {
+    
+    let processedPosts;
     if (!activeFilter.type || !activeFilter.value) {
-      return posts;
+      processedPosts = posts;
+    } else {
+      processedPosts = posts.filter(post => {
+        switch (activeFilter.type) {
+          case 'category':
+            return Array.isArray(post.categories) && post.categories.includes(activeFilter.value);
+          case 'year':
+            try {
+              const postYear = new Date(post.createdAt).getFullYear().toString();
+              return postYear === activeFilter.value;
+            } catch (e) {
+              console.error("Error parsing date for filtering:", e);
+              return false; 
+            }
+          case 'author':
+            return post.author === activeFilter.value;
+          default:
+            return true; 
+        }
+      });
     }
 
-    return posts.filter(post => {
-      switch (activeFilter.type) {
-        case 'category':
-          return Array.isArray(post.categories) && post.categories.includes(activeFilter.value);
-        case 'year':
-          try {
-            const postYear = new Date(post.createdAt).getFullYear().toString();
-            return postYear === activeFilter.value;
-          } catch (e) {
-            console.error("Error parsing date for filtering:", e);
-            return false; 
-          }
-        case 'author':
-          return post.author === activeFilter.value;
-        default:
-          return true; 
-      }
+    return [...processedPosts].sort((a, b) => {
+      return new Date(b.createdAt) - new Date(a.createdAt);
     });
-  }, [posts, activeFilter]); // Dependencias: recalcular si cambian los posts o el filtro
-  // --- FIN: LÓGICA DE FILTRADO ---
 
-  const formatDate = (isoString) => { /* ... (tu función formatDate) ... */ };
+  }, [posts, activeFilter]); 
 
-  if (loading) { /* ... (tu estado de carga) ... */ }
+  const formatDate = (isoString) => {
+    if (!isoString) return '';
+    try {
+      return new Date(isoString).toLocaleDateString(lang === 'es' ? 'es-ES' : 'en-CA', {
+        year: 'numeric', month: '2-digit', day: '2-digit'
+      });
+    } catch (e) { 
+      console.error("Error formatting date:", e);
+      return isoString; 
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="relative min-h-screen bg-black text-white flex flex-col overflow-hidden">
+        {/* Fondo */}
+        <div className="absolute inset-0 z-0 opacity-50 bg-gradient-to-b from-black via-black to-purple-900/40" />
+        
+        <div className="relative z-10 flex flex-col flex-1">
+          {/* Menú Móvil */}
+          <CircleMovilMenu /> 
+
+          {/* --- Layout Principal (Esqueleto) --- */}
+          <main className="flex flex-col md:flex-row max-w-7xl mx-auto w-full mt-16 md:mt-24 animate-pulse">
+            
+            {/* Esqueleto del Sidebar */}
+            <aside className="hidden md:block w-1/4 p-6 md:p-8">
+              <div className="sticky top-24 space-y-8">
+                <div className="h-6 bg-gray-700 rounded-md w-1/2"></div>
+                <div className="space-y-3">
+                  <div className="h-4 bg-gray-700 rounded-md w-3/4"></div>
+                  <div className="h-4 bg-gray-700 rounded-md w-2/3"></div>
+                  <div className="h-4 bg-gray-700 rounded-md w-3/4"></div>
+                </div>
+                <div className="h-6 bg-gray-700 rounded-md w-1/2"></div>
+                <div className="space-y-3">
+                  <div className="h-4 bg-gray-700 rounded-md w-3/4"></div>
+                  <div className="h-4 bg-gray-700 rounded-md w-2/3"></div>
+                </div>
+              </div>
+            </aside>
+
+            {/* Esqueleto del Contenido Principal (Posts) */}
+            <div className="w-full md:w-3/4 p-6 md:p-8 space-y-12">
+              {/* Esqueleto de Card (repetido) */}
+              {[1, 2].map((n) => (
+                <article key={n} className="bg-white/5 backdrop-blur-lg rounded-2xl shadow-xl overflow-hidden p-6 md:p-8">
+                  {/* Título */}
+                  <div className="h-10 bg-gray-700 rounded-md w-3/4 mb-4"></div>
+                  {/* Descripción corta */}
+                  <div className="h-5 bg-gray-700 rounded-md w-full mb-6"></div>
+                  {/* Metadata */}
+                  <div className="h-4 bg-gray-700 rounded-md w-1/2 mb-8"></div>
+                  {/* Imagen */}
+                  <div className="rounded-xl w-full h-80 bg-gray-700"></div>
+                </article>
+              ))}
+            </div>
+
+          </main>
+          
+          <Footer />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative min-h-screen bg-black text-white flex flex-col overflow-hidden">
@@ -57,12 +133,12 @@ function BlogPage() {
 
         {/* --- Layout Principal --- */}
         <div className="flex flex-col md:flex-row max-w-7xl mx-auto w-full mt-16 md:mt-24">
-          <div className="hidden md:block">
+          <div className="hidden md:block max-h">
             <BlogSidebar posts={posts} onFilterChange={handleFilterChange} /> 
           </div>
 
           {/* Contenido Principal */}
-          <main className="w-full md:w-3/4 p-6 md:p-8 space-y-12">
+          <main className="w-full md:w-3/4 p-6 md:p-8 space-y-12 max-h-[calc(100vh-6rem)] overflow-y-auto">
             
             {/* --- Mostrar Filtro Activo y Botón de Limpiar --- */}
             {activeFilter.type && activeFilter.value && (
@@ -139,9 +215,21 @@ function BlogPage() {
         </div>
 
         {/* Filtro Flotante */}
-        <button className="md:hidden fixed bottom-6 right-6 p-4 bg-gray-800/90 backdrop-blur-lg border border-white/20 rounded-full shadow-xl">
-          <HiOutlineFilter className="w-7 h-7 text-orange-500" />
-        </button>
+        <button 
+          onClick={() => setIsMobileFilterOpen(true)} 
+          className="md:hidden fixed bottom-6 right-6 p-4 bg-gray-800/90 backdrop-blur-lg border border-white/20 rounded-full shadow-xl z-30" // Añadido z-30
+        >
+          <HiOutlineFilter className="w-7 h-7 text-orange-500" />
+        </button>
+
+        {isMobileFilterOpen && (
+          <MobileFilterPanel
+            posts={posts}
+            onFilterChange={handleMobileFilterChange} // Pasa el handler que también cierra
+            onClose={() => setIsMobileFilterOpen(false)}
+            t={t} // Pasa la función de traducción
+          />
+        )}
         
         <Footer />
       </div>
