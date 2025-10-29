@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getDatabase } from "firebase/database";
+import { getAuth } from "firebase/auth"; // <-- 1. Importa getAuth
 
-// 1. Lee las variables desde import.meta.env
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
@@ -12,8 +12,11 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
-// Inicializa Firebase
-const app = initializeApp(firebaseConfig);
+// Inicializa Firebase y exporta la app
+export const app = initializeApp(firebaseConfig); 
 
 // Exporta la instancia de Realtime Database
 export const database = getDatabase(app);
+
+// Exporta la instancia de Auth
+export const auth = getAuth(app); 

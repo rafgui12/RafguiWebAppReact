@@ -1,7 +1,10 @@
 import { Link } from 'react-router';
-import { HiOutlineHome } from 'react-icons/hi'; // Ícono de "home"
+import { HiOutlineHome } from 'react-icons/hi';
+import useLanguage from '../../hooks/useLanguage';
 
 function NotFoundPage() {
+  const { t } = useLanguage();
+
   return (
     // Contenedor principal: Ocupa toda la pantalla y centra el contenido
     <div className="relative min-h-screen bg-black text-white flex flex-col items-center justify-center overflow-hidden p-6">
@@ -20,13 +23,12 @@ function NotFoundPage() {
 
         {/* Mensaje principal */}
         <h2 className="text-3xl md:text-5xl font-bold mt-4">
-          Perdido en el Espacio
+          {t('notfound_title')}
         </h2>
 
         {/* Descripción */}
         <p className="text-lg text-gray-300 mt-4 max-w-md">
-          Parece que te has desviado a un sector desconocido de la galaxia. 
-          La página que buscas no existe o fue movida a otra dimensión.
+          {t('notfound_description')}
         </p>
 
         {/* Botón para volver al inicio */}
@@ -37,7 +39,7 @@ function NotFoundPage() {
                      transition-all duration-300"
         >
           <HiOutlineHome className="w-5 h-5" />
-          <span>Volver a la base</span>
+          <span>{t('notfound_button')}</span>
         </Link>
       </div>
     </div>
