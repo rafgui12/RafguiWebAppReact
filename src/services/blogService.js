@@ -9,27 +9,27 @@ const BLOG_DATA_PATH = 'blogData';
 // 1. EL HOOK (READ)
 // ----------------------------------------------------------------
 export function useBlogPosts() {
-  const [posts, setPosts] = useState([]); 
-  const [loading, setLoading] = useState(true);
+  const [posts, setPosts] = useState([]); 
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const blogDataRef = ref(database, BLOG_DATA_PATH);
-    setLoading(true);
-    
-    onValue(blogDataRef, (snapshot) => {
-      const data = snapshot.val();
-      const postsArray = data 
-        ? Object.keys(data).map(key => ({ id: key, ...data[key] })) 
-        : [];
-      setPosts(postsArray); // <-- Actualiza el estado 'posts'
-      setLoading(false);
-    });
+  useEffect(() => {
+    const blogDataRef = ref(database, BLOG_DATA_PATH);
+    setLoading(true);
+    
+    onValue(blogDataRef, (snapshot) => {
+      const data = snapshot.val();
+      const postsArray = data 
+        ? Object.keys(data).map(key => ({ id: key, ...data[key] })) 
+        : [];
+      setPosts(postsArray);
+      setLoading(false);
+    });
 
-    // Limpieza
-    return () => off(blogDataRef);
-  }, []);
+    // Limpieza
+    return () => off(blogDataRef);
+  }, []);
 
-  return { posts, loading }; // <-- Devuelve 'posts'
+  return { posts, loading };
 }
 
 // ----------------------------------------------------------------
@@ -42,16 +42,21 @@ const blogDataBaseRef = ref(database, BLOG_DATA_PATH); // <-- CORRECCIÓN: Refer
  * CREA un nuevo post de blog en Firebase.
  * @param {object} blogPostData - Los datos del formulario del post.
  */
-export const createBlogPost = (blogPostData) => { // <-- CORRECCIÓN: Nombre de función
-  // Aquí puedes añadir validaciones o transformaciones si es necesario
-  const dataToSave = {
-    ...blogPostData,
-    createdAt: blogPostData.createdAt || new Date().toISOString(), 
-    myOpinion: blogPostData.myOpinion || {},
-    categories: Array.isArray(blogPostData.categories) ? blogPostData.categories : [blogPostData.categories]
-  };
-  
-  return push(blogDataBaseRef, dataToSave);
+export const createBlogPost = (blogPostData) => {
+  // Convierte el string de 'categories' en un array
+  const categoriesArray = blogPostData.categories 
+    ? blogPostData.categories.split(',').map(cat => cat.trim()) 
+    : [];
+
+  const dataToSave = {
+    ...blogPostData,
+    categories: categoriesArray, // Guarda el array
+    createdAt: blogPostData.createdAt || new Date().toISOString(), 
+    myOpinion: blogPostData.myOpinion || {},
+    commentsEnabled: blogPostData.commentsEnabled === undefined ? true : blogPostData.commentsEnabled, // Valor por defecto
+  };
+  
+  return push(blogDataBaseRef, dataToSave);
 };
 
 /**
@@ -60,32 +65,26 @@ export const createBlogPost = (blogPostData) => { // <-- CORRECCIÓN: Nombre de 
  * @returns {Promise<object|null>} - El objeto del post o null si no se encuentra.
  */
 export const getBlogPostById = async (postId) => {
-  const postPath = `${BLOG_DATA_PATH}/${postId}`; // Define the path
-  const postRef = ref(database, postPath);
+  const postPath = `${BLOG_DATA_PATH}/${postId}`;
+  const postRef = ref(database, postPath);
+  console.log(`[getBlogPostById] Querying path: ${postPath}`);
 
-  // --- Print 1: Log the path being queried ---
-  console.log(`[getBlogPostById] Querying path: ${postPath}`);
+  try {
+    const snapshot = await get(postRef); 
+    console.log(`[getBlogPostById] Snapshot received for ${postId}:`, snapshot.val());
 
-  try {
-    const snapshot = await get(postRef); 
-
-    console.log(`[getBlogPostById] Snapshot received for ${postId}:`, snapshot.val());
-
-    if (snapshot.exists()) {
-      const postData = { id: snapshot.key, ...snapshot.val() };
-      // --- Print 3: Log the data being returned if found ---
-      console.log(`[getBlogPostById] Post found and returning:`, postData);
-      return postData; // Devuelve el post con su ID
-    } else {
-      // --- Print 4: Log if snapshot doesn't exist ---
-      console.log(`[getBlogPostById] Snapshot for ${postId} does not exist.`);
-      return null; // No encontrado
-    }
-  } catch (error) {
-    // --- Print 5: Log the specific error during fetch ---
-    console.error(`[getBlogPostById] Error fetching post ${postId}:`, error);
-    throw error; // Propaga el error para que el componente lo maneje
-  }
+    if (snapshot.exists()) {
+      const postData = { id: snapshot.key, ...snapshot.val() };
+      console.log(`[getBlogPostById] Post found and returning:`, postData);
+      return postData;
+    } else {
+      console.log(`[getBlogPostById] Snapshot for ${postId} does not exist.`);
+      return null;
+    }
+  } catch (error) {
+    console.error(`[getBlogPostById] Error fetching post ${postId}:`, error);
+    throw error;
+  }
 };
 
 /**
@@ -94,14 +93,20 @@ export const getBlogPostById = async (postId) => {
  * @param {object} blogPostData - Los datos del formulario a actualizar.
  */
 export const updateBlogPost = (id, blogPostData) => { 
-  const postRef = ref(database, `${BLOG_DATA_PATH}/${id}`); 
-  
-  const dataToSave = {
-     ...blogPostData,
-  };
-  delete dataToSave.id; 
+  const postRef = ref(database, `${BLOG_DATA_PATH}/${id}`); 
+  
+  // Asegura que las categorías se guarden como array
+  const categoriesArray = typeof blogPostData.categories === 'string'
+    ? blogPostData.categories.split(',').map(cat => cat.trim())
+    : blogPostData.categories; // Si ya es un array (de la DB), lo deja
+  
+  const dataToSave = {
+    ...blogPostData,
+    categories: categoriesArray,
+  };
+  delete dataToSave.id; // No guardes el ID dentro del objeto
 
-  return update(postRef, dataToSave);
+  return update(postRef, dataToSave);
 };
 
 /**

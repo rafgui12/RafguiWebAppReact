@@ -11,8 +11,10 @@ import ProtectedRoute from "./components/ProtectedRoute.jsx"
 import LoginPage from "./pages/login/LoginPage.jsx"
 //Rutas Admin
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx"
-import ManageBlog from "./pages/admin/ManageBlog.jsx"
 import AdminProfile from "./pages/admin/AdminProfile.jsx"
+//Rutas Admin Blog
+import ManageBlog from "./pages/admin/blog/ManageBlog.jsx"
+import BlogForm from "./pages/admin/blog/BlogForm.jsx"
 //Rutas Admin Experience
 import ManageExperience from "./pages/admin/experience/ManageExperience.jsx"
 import ExperienceForm from "./pages/admin/experience/ExperienceForm.jsx"
@@ -46,8 +48,11 @@ function App() {
         <Route path="/admin" element={<ProtectedRoute />}>
           <Route index element={<AdminDashboard />} />
           {/* Dashes */}
-          <Route path="blog" element={<ManageBlog />} />
           <Route path="profile" element={<AdminProfile />} />
+          {/* AdminBlog */}
+          <Route path="blog" element={<ManageBlog />} />
+          <Route path="blog/new" element={<BlogForm />} />
+          <Route path="blog/edit/:id" element={<BlogForm />} />
           {/* AdminExperience */}
           <Route path="experience" element={<ManageExperience />} />
           <Route path="experience/new/:type" element={<ExperienceForm />} />
