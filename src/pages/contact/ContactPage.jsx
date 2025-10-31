@@ -1,12 +1,12 @@
 import Footer from '../components/Footer'; 
 import useLanguage from '../../hooks/useLanguage';
 import HeaderBack from '../components/HeaderBack';
-import { useContactLinks } from '../../services/contactService';
-// Icons
+import { useContactLinks, useContactPageConfig } from '../../services/contactService';
 import { 
   FaGithub, FaGoogle, FaLinkedin, FaTwitter, FaFacebook, FaInstagram 
 } from 'react-icons/fa';
 import { HiOutlineMail, HiLink } from 'react-icons/hi';
+
 
 const iconMap = {
   'Github': FaGithub,
@@ -22,7 +22,8 @@ const iconMap = {
 
 function ContactPage() {
   const { lang, t } = useLanguage();
-  const {contactLinks, loading} = useContactLinks();
+  const {contactLinks, loading: linksLoading} = useContactLinks();
+  const { config, loading: configLoading } = useContactPageConfig();
 
   const socialLinks = contactLinks
     .filter(link => link.Type === 'Social' && link.visible)
@@ -32,7 +33,7 @@ function ContactPage() {
     .filter(link => link.Type === 'Personal' && link.visible)
     .map(link => ({ ...link, Icon: iconMap[link.Name] || HiLink })); 
 
-  if (loading) {
+  if (linksLoading || configLoading) {
     return (
       <div className="relative min-h-screen bg-black text-white flex justify-center items-center">
         <h1 className="text-3xl">Loading...</h1>
@@ -58,14 +59,16 @@ function ContactPage() {
               {/* --- 1. Lado Izquierdo (Imagen y Bienvenida) --- */}
               <div className="md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
                 {/* Oculta la imagen en móvil, la muestra en escritorio */}
-                <div className="hidden md:block w-full h-64 bg-purple-900/50 rounded-lg mb-8">
-                  {/* Aquí pondrías tu imagen:
-                    <img src="/path/to/colombia-image.jpg" 
+                <div className="hidden md:block w-full h-64 rounded-lg mb-8 overflow-hidden">
+                  {config.mainImageUrl ? (
+                    <img src={config.mainImageUrl} 
+                         alt="Contact"
                          className="w-full h-full object-cover rounded-lg" />
-                  */}
-                   <div className="w-full h-full flex items-center justify-center text-gray-400">
-                    Tu imagen (Ej. Colombia) aquí
-                   </div>
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-gray-400 bg-purple-900/50">
+                      Placeholder
+                    </div>
+                  )}
                 </div>
 
                 <h1 className="text-4xl md:text-5xl font-bold mb-4">
@@ -76,11 +79,13 @@ function ContactPage() {
                 </p>
                 {/* Foto de perfil (solo en móvil, para reemplazar la imagen grande) */}
                 <div className="md:hidden flex justify-center my-6">
-                  <img 
-                    src="/path/to/your-profile-pic.jpg" // CAMBIA ESTO por tu foto
-                    alt="Rafael Angulo"
-                    className="w-32 h-32 rounded-full border-4 border-purple-500/50"
-                  />
+                  {config.profileImageUrl && (
+                    <img 
+                      src={config.profileImageUrl} 
+                      alt="Rafael Angulo"
+                      className="w-32 h-32 rounded-full border-4 border-purple-500/50 object-cover"
+                    />
+                  )}
                 </div>
               </div>
               {/* // --- CAMBIO 3: AÑADIDO EL MAPA DE socialLinks --- */}

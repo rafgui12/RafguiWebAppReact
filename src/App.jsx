@@ -9,11 +9,18 @@ import BlogPostPage from "./pages/blog/BlogPostPage.jsx"
 //Rutas Protegidas
 import ProtectedRoute from "./components/ProtectedRoute.jsx"
 import LoginPage from "./pages/login/LoginPage.jsx"
+//Rutas Admin
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx"
 import ManageBlog from "./pages/admin/ManageBlog.jsx"
-import ManagePortfolio from "./pages/admin/ManagePortfolio.jsx"
-import ManageExperience from "./pages/admin/ManageExperience.jsx"
 import AdminProfile from "./pages/admin/AdminProfile.jsx"
+//Rutas Admin Experience
+import ManageExperience from "./pages/admin/experience/ManageExperience.jsx"
+import ExperienceForm from "./pages/admin/experience/ExperienceForm.jsx"
+//Rutas Admin Porfolio
+import ManagePortfolio from "./pages/admin/porfolio/ManagePortfolio.jsx"
+import ProjectForm from "./pages/admin/porfolio/ProjectForm.jsx"
+//Rutas Admin Contact
+import ManageContact from "./pages/admin/contact/ManageContact.jsx"
 // Ruta 404
 import NotFoundPage from "./pages/NotFoundPage/NotFoundPage.jsx"
 
@@ -40,9 +47,17 @@ function App() {
           <Route index element={<AdminDashboard />} />
           {/* Dashes */}
           <Route path="blog" element={<ManageBlog />} />
-          <Route path="portfolio" element={<ManagePortfolio />} />
-          <Route path="experience" element={<ManageExperience />} />
           <Route path="profile" element={<AdminProfile />} />
+          {/* AdminExperience */}
+          <Route path="experience" element={<ManageExperience />} />
+          <Route path="experience/new/:type" element={<ExperienceForm />} />
+          <Route path="experience/edit/:type/:id" element={<ExperienceForm />} />
+          {/* AdminContact */}
+          <Route path="contact" element={<ManageContact />} />
+          {/* AdminProtfolio */}
+          <Route path="portfolio" element={<ManagePortfolio />} />
+          <Route path="portfolio/new" element={<ProjectForm />} />
+          <Route path="portfolio/edit/:id" element={<ProjectForm />} />
         </Route>
 
         {/* === 4. RUTA NOT FOUND (SIEMPRE AL FINAL) === */}

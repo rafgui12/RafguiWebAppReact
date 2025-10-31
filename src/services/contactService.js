@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { database } from '../firebaseConfig'; 
-import { ref, onValue, off, push, update, remove } from 'firebase/database';
+import { ref, onValue, off, push, update, remove, get, set } from 'firebase/database';
 
 // ----------------------------------------------------------------
 // 1. EL HOOK (READ)
@@ -35,6 +35,7 @@ export function useContactLinks() {
 // ----------------------------------------------------------------
 
 const contactLinksRef = ref(database, 'contactLinksData');
+const configRef = ref(database, 'contactPageConfig');
 
 /**
  * CREA un nuevo proyecto en Firebase.
@@ -44,7 +45,6 @@ export const createContactLink = (contactLinksData) => {
   // Convertimos el string de "Tools" en un array
   const dataToSave = {
     ...contactLinksData,
-    Tools: contactLinksData.Tools.split(',').map(tool => tool.trim())
   };
   
   // 'push' crea el ID único y guarda los datos
@@ -72,4 +72,34 @@ export const updateContactLink = (id, contactLinksData) => {
 export const deleteContactLink = (id) => {
   const contactLinksRef = ref(database, `contactLinksData/${id}`);
   return remove(contactLinksRef);
+};
+
+/**
+ * Hook para leer las URLs de las imágenes de la página.
+ */
+export function useContactPageConfig() {
+  const [config, setConfig] = useState({ mainImageUrl: '', profileImageUrl: '' });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    // get() solo lee los datos una vez
+    get(configRef).then((snapshot) => {
+      if (snapshot.exists()) {
+        setConfig(snapshot.val());
+      }
+      setLoading(false);
+    });
+  }, []);
+
+  return { config, loading };
+}
+
+/**
+ * Actualiza las URLs de las imágenes.
+ * @param {object} data - { mainImageUrl, profileImageUrl }
+ */
+export const updateContactPageConfig = (data) => {
+  // 'set' sobrescribe todos los datos en esta ruta
+  return set(configRef, data);
 };

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router'; // CORREGIDO: import de react-router-dom
 import useLanguage from '../../hooks/useLanguage';
 import Footer from '../components/Footer';
+import ReactMarkdown from 'react-markdown';
 // IMPORTA las funciones del servicio necesarias
 import { getBlogPostById, addCommentToPost } from '../../services/blogService';
 import HeaderBack from '../components/HeaderBack';
@@ -187,10 +188,8 @@ function BlogPostPage() {
     );
   }
   if (!post) { return <div>Post not found.</div>; }
-
   // --- Accede a la opinión directamente ---
   const myOpinion = post.myOpinion;
-
   // --- Render the post content ---
   return (
     <div className="relative min-h-screen bg-black text-white flex flex-col overflow-hidden">
@@ -226,14 +225,28 @@ function BlogPostPage() {
                 </div>
               )}
 
+              {post.shortDescription && (
+                <p className="mb-8 pl-4 border-l-4 border-orange-500/50 text-xl italic text-gray-400">
+                  {post.shortDescription[lang.toUpperCase()]}
+                </p>
+              )}
+
               {/* Post Content */}
               <div className="prose prose-lg prose-invert max-w-none text-gray-300 blog-content mb-8">
-                 {post.content[lang.toUpperCase()].split('\n').map((paragraph, index) => (
-                    <p key={index} dangerouslySetInnerHTML={{ __html: paragraph
-                        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                        .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-orange-400 hover:underline">$1</a>')
-                    }} />
-                 ))}
+                <ReactMarkdown
+                  components={{
+                    a: ({ node, ...props }) => (
+                      <a 
+                        {...props} 
+                        className="text-orange-400 hover:underline" 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                      />
+                    ),
+                  }}
+                >
+                  {post.content[lang.toUpperCase()].replace(/\\n/g, '\n')}
+                </ReactMarkdown>
               </div>
               {/* Author at the end */}
                {post.author && (

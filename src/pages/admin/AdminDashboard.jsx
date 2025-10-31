@@ -3,11 +3,12 @@ import { useAuth } from '../../context/AuthContext';
 import { logout } from '../../services/authService';
 import { useNavigate, Link } from 'react-router';
 import useLanguage from '../../hooks/useLanguage';
-import { // <-- Importa los íconos
+import { 
   HiOutlineRss, 
   HiOutlineBriefcase, 
   HiOutlineDocumentText,
   HiOutlineUserCircle,
+  HiOutlineMail,
   HiOutlineLogout
 } from 'react-icons/hi';
 
@@ -106,6 +107,11 @@ const AdminDashboard = () => {
             to="/admin/experience"
             title={t('admin_manage_experience')}
             icon={<HiOutlineDocumentText className="w-12 h-12" />}
+          />
+          <DashboardCard 
+            to="/admin/contact"
+            title={t('admin_manage_contact')}
+            icon={<HiOutlineMail className="w-12 h-12" />}
           />
         </div>
       </div>
