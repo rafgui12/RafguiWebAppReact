@@ -1,62 +1,60 @@
 import { useState, useEffect } from 'react';
-import { database } from '../firebaseConfig'; // Asegúrate que la ruta sea correcta
+import { database } from '../firebaseConfig';
 import { ref, onValue, off, push, update, remove, get } from 'firebase/database';
 
-// El nodo en Firebase donde se guardarán los posts del blog
 const BLOG_DATA_PATH = 'blogData'; 
 
 // ----------------------------------------------------------------
 // 1. EL HOOK (READ)
 // ----------------------------------------------------------------
 export function useBlogPosts() {
-  const [posts, setPosts] = useState([]); 
-  const [loading, setLoading] = useState(true);
+  const [posts, setPosts] = useState([]); 
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const blogDataRef = ref(database, BLOG_DATA_PATH);
-    setLoading(true);
-    
-    onValue(blogDataRef, (snapshot) => {
-      const data = snapshot.val();
-      const postsArray = data 
-        ? Object.keys(data).map(key => ({ id: key, ...data[key] })) 
-        : [];
-      setPosts(postsArray);
-      setLoading(false);
-    });
+  useEffect(() => {
+    const blogDataRef = ref(database, BLOG_DATA_PATH);
+    setLoading(true);
+    
+    onValue(blogDataRef, (snapshot) => {
+      const data = snapshot.val();
+      const postsArray = data 
+      ? Object.keys(data).map(key => ({ id: key, ...data[key] })) 
+      : [];
+      setPosts(postsArray);
+      setLoading(false);
+    });
 
-    // Limpieza
-    return () => off(blogDataRef);
-  }, []);
+    // Limpieza
+    return () => off(blogDataRef);
+  }, []);
 
-  return { posts, loading };
+ return { posts, loading };
 }
 
 // ----------------------------------------------------------------
 // 2. LAS FUNCIONES CRUD (CREATE, UPDATE, DELETE)
 // ----------------------------------------------------------------
 
-const blogDataBaseRef = ref(database, BLOG_DATA_PATH); // <-- CORRECCIÓN: Referencia base
+const blogDataBaseRef = ref(database, BLOG_DATA_PATH);
 
 /**
  * CREA un nuevo post de blog en Firebase.
  * @param {object} blogPostData - Los datos del formulario del post.
  */
 export const createBlogPost = (blogPostData) => {
-  // Convierte el string de 'categories' en un array
-  const categoriesArray = blogPostData.categories 
-    ? blogPostData.categories.split(',').map(cat => cat.trim()) 
-    : [];
+  const categoriesArray = blogPostData.categories 
+    ? blogPostData.categories.split(',').map(cat => cat.trim()) 
+    : [];
 
-  const dataToSave = {
-    ...blogPostData,
-    categories: categoriesArray, // Guarda el array
-    createdAt: blogPostData.createdAt || new Date().toISOString(), 
-    myOpinion: blogPostData.myOpinion || {},
-    commentsEnabled: blogPostData.commentsEnabled === undefined ? true : blogPostData.commentsEnabled, // Valor por defecto
-  };
-  
-  return push(blogDataBaseRef, dataToSave);
+  const dataToSave = {
+    ...blogPostData,
+    categories: categoriesArray,
+    createdAt: blogPostData.createdAt || new Date().toISOString(), 
+    myOpinion: blogPostData.myOpinion || {},
+    commentsEnabled: blogPostData.commentsEnabled === undefined ? true : blogPostData.commentsEnabled,
+  };
+
+  return push(blogDataBaseRef, dataToSave);
 };
 
 /**
@@ -65,26 +63,21 @@ export const createBlogPost = (blogPostData) => {
  * @returns {Promise<object|null>} - El objeto del post o null si no se encuentra.
  */
 export const getBlogPostById = async (postId) => {
-  const postPath = `${BLOG_DATA_PATH}/${postId}`;
-  const postRef = ref(database, postPath);
-  console.log(`[getBlogPostById] Querying path: ${postPath}`);
+  const postPath = `${BLOG_DATA_PATH}/${postId}`;
+  const postRef = ref(database, postPath);
 
-  try {
-    const snapshot = await get(postRef); 
-    console.log(`[getBlogPostById] Snapshot received for ${postId}:`, snapshot.val());
+  try {
+    const snapshot = await get(postRef); 
 
-    if (snapshot.exists()) {
-      const postData = { id: snapshot.key, ...snapshot.val() };
-      console.log(`[getBlogPostById] Post found and returning:`, postData);
-      return postData;
-    } else {
-      console.log(`[getBlogPostById] Snapshot for ${postId} does not exist.`);
-      return null;
-    }
-  } catch (error) {
-    console.error(`[getBlogPostById] Error fetching post ${postId}:`, error);
-    throw error;
-  }
+    if (snapshot.exists()) {
+    const postData = { id: snapshot.key, ...snapshot.val() };
+    return postData;
+    } else {
+    return null;
+    }
+    } catch (error) {
+    throw error;
+  }
 };
 
 /**
@@ -93,28 +86,27 @@ export const getBlogPostById = async (postId) => {
  * @param {object} blogPostData - Los datos del formulario a actualizar.
  */
 export const updateBlogPost = (id, blogPostData) => { 
-  const postRef = ref(database, `${BLOG_DATA_PATH}/${id}`); 
-  
-  // Asegura que las categorías se guarden como array
-  const categoriesArray = typeof blogPostData.categories === 'string'
-    ? blogPostData.categories.split(',').map(cat => cat.trim())
-    : blogPostData.categories; // Si ya es un array (de la DB), lo deja
-  
-  const dataToSave = {
-    ...blogPostData,
-    categories: categoriesArray,
-  };
-  delete dataToSave.id; // No guardes el ID dentro del objeto
+  const postRef = ref(database, `${BLOG_DATA_PATH}/${id}`); 
 
-  return update(postRef, dataToSave);
+  const categoriesArray = typeof blogPostData.categories === 'string'
+    ? blogPostData.categories.split(',').map(cat => cat.trim())
+    : blogPostData.categories;
+
+  const dataToSave = {
+    ...blogPostData,
+    categories: categoriesArray,
+  };
+  delete dataToSave.id; 
+
+  return update(postRef, dataToSave);
 };
 
 /**
  * BORRA un post de blog de Firebase.
  * @param {string} id - El ID del post a borrar.
  */
-export const deleteBlogPost = (id) => { // <-- CORRECCIÓN: Nombre de función
-  const postRef = ref(database, `${BLOG_DATA_PATH}/${id}`); // <-- CORRECCIÓN: Ruta específica del post
+export const deleteBlogPost = (id) => {
+  const postRef = ref(database, `${BLOG_DATA_PATH}/${id}`); 
   return remove(postRef);
 };
 
@@ -123,7 +115,7 @@ export const deleteBlogPost = (id) => { // <-- CORRECCIÓN: Nombre de función
  * @param {string} postId - El ID del post.
  * @param {object} opinionData - Datos del comentario ({ createdAt, content: { EN, ES } }).
  */
-export const addOpinionToBlogPost = (postId, opinionData) => { // <-- CORRECCIÓN: Nombre de función
+export const addOpinionToBlogPost = (postId, opinionData) => {
   const opinionsRef = ref(database, `${BLOG_DATA_PATH}/${postId}/myOpinion`);
   return push(opinionsRef, {
       ...opinionData,
@@ -133,10 +125,10 @@ export const addOpinionToBlogPost = (postId, opinionData) => { // <-- CORRECCIÓ
 
 /**
  * BORRA un comentario ('myOpinion') de un post.
- * @param {string} postId - El ID del post.
- * @param {string} opinionId - El ID del comentario a borrar.
+ * @param {string} postId 
+ * @param {string} opinionId 
  */
-export const deleteOpinionFromBlogPost = (postId, opinionId) => { // <-- CORRECCIÓN: Nombre de función
+export const deleteOpinionFromBlogPost = (postId, opinionId) => {
     const opinionRef = ref(database, `${BLOG_DATA_PATH}/${postId}/myOpinion/${opinionId}`);
     return remove(opinionRef);
 }
@@ -145,11 +137,10 @@ export const deleteOpinionFromBlogPost = (postId, opinionId) => { // <-- CORRECC
 
 /**
  * AÑADE un comentario de visitante a un post.
- * @param {string} postId - El ID del post.
- * @param {object} commentData - Datos del comentario ({ authorName?, content }).
+ * @param {string} postId 
+ * @param {object} commentData 
  */
 export const addCommentToPost = (postId, commentData) => {
-  // 👇 CORRECCIÓN: Apunta al nodo 'comments' DENTRO del post específico 👇
   const commentsRef = ref(database, `${BLOG_DATA_PATH}/${postId}/comments`);
 
   const dataToSave = {
@@ -158,17 +149,15 @@ export const addCommentToPost = (postId, commentData) => {
     createdAt: commentData.createdAt || new Date().toISOString()
   };
   console.log(`[addCommentToPost] Adding comment to ${BLOG_DATA_PATH}/${postId}/comments`, dataToSave);
-  // 'push' generará un ID único para este comentario bajo el nodo 'comments'
   return push(commentsRef, dataToSave);
 };
 
 /**
  * BORRA un comentario de visitante.
- * @param {string} postId - El ID del post.
- * @param {string} commentId - El ID del comentario a borrar.
+ * @param {string} postId 
+ * @param {string} commentId
  */
 export const deleteCommentFromPost = (postId, commentId) => {
-    // 👇 CORRECCIÓN: Apunta al comentario específico dentro de 'comments' 👇
     const commentRef = ref(database, `${BLOG_DATA_PATH}/${postId}/comments/${commentId}`);
     return remove(commentRef);
 };
@@ -176,17 +165,17 @@ export const deleteCommentFromPost = (postId, commentId) => {
 // --- FUNCIÓN PARA ACTUALIZAR 'myOpinion' (La opinión del autor) ---
 /**
  * SETS or UPDATES the single 'myOpinion' object for a specific post.
- * @param {string} postId - The ID of the post.
- * @param {object} opinionData - The opinion object ({ content: { EN, ES }, createdAt? }).
+ * @param {string} postId
+ * @param {object} opinionData
  */
 export const setMyOpinionForPost = (postId, opinionData) => {
   const postRef = ref(database, `${BLOG_DATA_PATH}/${postId}`);
   const dataToUpdate = {
-    myOpinion: { // Apunta específicamente al campo 'myOpinion'
+    myOpinion: { 
       ...opinionData,
       createdAt: opinionData.createdAt || new Date().toISOString()
     }
   };
   console.log(`[setMyOpinionForPost] Updating ${BLOG_DATA_PATH}/${postId} with:`, dataToUpdate);
-  return update(postRef, dataToUpdate); // Usa update para modificar solo 'myOpinion'
+  return update(postRef, dataToUpdate);
 };

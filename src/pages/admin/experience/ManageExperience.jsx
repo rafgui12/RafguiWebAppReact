@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-// CORREGIDO: Importa 'Link' y 'useNavigate' desde 'react-router-dom'
 import { Link, useNavigate } from 'react-router'; 
 import useLanguage from '../../../hooks/useLanguage';
 import {
@@ -11,10 +10,9 @@ import {
   createEducationItem,
   updateEducationItem,
   deleteEducationItem
-} from '../../../services/experienceService'; // Asegúrate que la ruta sea correcta
+} from '../../../services/experienceService'; 
 import { HiOutlinePencilAlt, HiOutlineTrash, HiPlus } from 'react-icons/hi';
 
-// --- COMPONENTE PRINCIPAL DE LA PÁGINA ---
 const ManageExperience = () => {
   const { t } = useLanguage();
 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { database } from '../firebaseConfig'; // Asegúrate que la ruta sea correcta
+import { database } from '../firebaseConfig';
 import { ref, onValue, off, push, update, remove } from 'firebase/database';
 
 // --- HOOKS (READ) ---

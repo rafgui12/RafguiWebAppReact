@@ -19,13 +19,10 @@ function PortfolioPage() {
     <>
       <div className="relative min-h-screen bg-black text-white flex flex-col overflow-hidden">
         <div className="absolute inset-0 z-0 opacity-50 bg-gradient-to-b from-black via-black to-purple-900/40" />
-
         {/* Contenido principal (con z-index) */}
         <div className="relative z-10 flex flex-col flex-1">
-          
           {/* --- INICIO: HEADER MÓVIL --- */}
           <HeaderBack />
-
           {/* Encabezado (tu código existente) */}
           <div className="text-center mb-12 z-10 mt-6">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
@@ -35,7 +32,6 @@ function PortfolioPage() {
               {t("portfolio_description")}
             </p>
           </div>
-
           {/* Grid de proyectos (tu código existente) */}
           <div className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 z-10">
             {projects

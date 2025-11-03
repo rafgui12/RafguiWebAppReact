@@ -32,7 +32,6 @@ function App() {
   return (
     <>
       <Routes>
-
         {/* === 1. TUS RUTAS PÚBLICAS === */}
         <Route path="/" element={<HomePage />} />
         <Route path="/portfolio" element={<PortfolioPage />} />
@@ -40,10 +39,8 @@ function App() {
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/blog" element={<BlogPage />} />
         <Route path="/blog/:postId" element={<BlogPostPage />} />
-
         {/* === 2. RUTA DE LOGIN (PÚBLICA) === */}
         <Route path="/login" element={<LoginPage />} />
-
         {/* === 3. RUTAS PROTEGIDAS (ADMIN) === */}
         <Route path="/admin" element={<ProtectedRoute />}>
           <Route index element={<AdminDashboard />} />
@@ -64,10 +61,8 @@ function App() {
           <Route path="portfolio/new" element={<ProjectForm />} />
           <Route path="portfolio/edit/:id" element={<ProjectForm />} />
         </Route>
-
         {/* === 4. RUTA NOT FOUND (SIEMPRE AL FINAL) === */}
         <Route path="*" element={<NotFoundPage />} />
-
       </Routes>
     </>
   )

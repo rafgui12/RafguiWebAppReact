@@ -21,8 +21,8 @@ function BlogPage() {
   };
 
   const handleMobileFilterChange = (type, value) => {
-    handleFilterChange(type, value); // Aplica el filtro
-    setIsMobileFilterOpen(false);      // Cierra el panel
+    handleFilterChange(type, value);
+    setIsMobileFilterOpen(false);
   };
 
   const filteredPosts = useMemo(() => {
@@ -115,9 +115,7 @@ function BlogPage() {
                 </article>
               ))}
             </div>
-
           </main>
-          
           <Footer />
         </div>
       </div>
@@ -129,7 +127,7 @@ function BlogPage() {
       {/* ... (Fondo) ... */}
       <div className="relative z-10 flex flex-col flex-1">
         {/* Menú Móvil */}
-        <CircleMovilMenu /> 
+        <CircleMovilMenu /> 
 
         {/* --- Layout Principal --- */}
         <div className="flex flex-col md:flex-row max-w-7xl mx-auto w-full mt-16 md:mt-24">
@@ -161,33 +159,33 @@ function BlogPage() {
             {filteredPosts.map((post) => ( 
                 <Link key={post.id} to={`/blog/${post.id}`} className="block group">
                     <article key={post.id} className="bg-white/5 backdrop-blur-lg rounded-2xl shadow-xl overflow-hidden">
-                        {/* Contenido del post */}
-                        <div className="p-6 md:p-8">
-                          <h1 className="text-3xl md:text-5xl font-bold text-orange-500 mb-4">
-                            {post.title[lang.toUpperCase()]}
-                          </h1>
-                          <p className="text-lg text-gray-300 mb-6">
-                            {post.shortDescription[lang.toUpperCase()]}
-                          </p>
-                          <div className="flex items-center space-x-4 text-sm text-gray-400 mb-4">
-                            <span>{formatDate(post.createdAt)}</span>
-                            {post.categories && post.categories.length > 0 && (
-                              <span>| {post.categories.join(', ')}</span>
-                            )}
-                          </div>
-                        </div>
-                        
-                        {/* Imagen del Post */}
-                        {post.imageUrl && (
-                          <div className="bg-blue-900/20 p-4 md:p-8 md:pt-0">
-                            <img
-                              src={post.imageUrl}
-                              alt={post.title[lang.toUpperCase()]}
-                              className="rounded-xl w-full"
-                            />
-                          </div>
-                        )}
-                      </article>
+                      {/* Contenido del post */}
+                      <div className="p-6 md:p-8">
+                        <h1 className="text-3xl md:text-5xl font-bold text-orange-500 mb-4">
+                          {post.title[lang.toUpperCase()]}
+                        </h1>
+                        <p className="text-lg text-gray-300 mb-6">
+                          {post.shortDescription[lang.toUpperCase()]}
+                        </p>
+                        <div className="flex items-center space-x-4 text-sm text-gray-400 mb-4">
+                          <span>{formatDate(post.createdAt)}</span>
+                            {post.categories && post.categories.length > 0 && (
+                          <span>| {post.categories.join(', ')}</span>
+                          )}
+                        </div>
+                      </div>
+         
+                      {/* Imagen del Post */}
+                      {post.imageUrl && (
+                      <div className="bg-blue-900/20 p-4 md:p-8 md:pt-0">
+                        <img
+                        src={post.imageUrl}
+                        alt={post.title[lang.toUpperCase()]}
+                        className="rounded-xl w-full"
+                        />
+                      </div>
+                    )}
+                  </article>
                 </Link>
             ))}
             
@@ -215,7 +213,7 @@ function BlogPage() {
         </div>
 
         {/* Filtro Flotante */}
-        <button 
+        <button 
           onClick={() => setIsMobileFilterOpen(true)} 
           className="md:hidden fixed bottom-6 right-6 p-4 bg-gray-800/90 backdrop-blur-lg border border-white/20 rounded-full shadow-xl z-30" // Añadido z-30
         >
@@ -230,8 +228,7 @@ function BlogPage() {
             t={t} // Pasa la función de traducción
           />
         )}
-        
-        <Footer />
+        <Footer />
       </div>
     </div>
   );
