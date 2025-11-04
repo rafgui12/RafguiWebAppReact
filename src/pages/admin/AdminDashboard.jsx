@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { logout } from '../../services/authService';
 import { useNavigate, Link } from 'react-router';
 import useLanguage from '../../hooks/useLanguage';
+import SEO from '../../components/SEO';
 import { 
   HiOutlineRss, 
   HiOutlineBriefcase, 
@@ -43,79 +44,82 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="relative min-h-screen bg-black text-white flex flex-col items-center p-6 md:p-12">
-      
-      {/* Fondo */}
-      <div className="absolute inset-0 z-0 opacity-50 bg-gradient-to-b from-black via-black to-purple-900/40" />
-      
-      <div className="relative z-10 w-full max-w-5xl">
+    <>
+      <SEO />
+      <div className="relative min-h-screen bg-black text-white flex flex-col items-center p-6 md:p-12">
         
-        {/* --- Encabezado --- */}
-        <header className="flex justify-between items-center mb-6">
+        {/* Fondo */}
+        <div className="absolute inset-0 z-0 opacity-50 bg-gradient-to-b from-black via-black to-purple-900/40" />
+        
+        <div className="relative z-10 w-full max-w-5xl">
           
-          {/* Lado Izquierdo: Título */}
-          <h1 className="text-3xl font-bold text-orange-400">
-            {t('admin_title')}
-          </h1>
-
-          {/* Lado Derecho: Acciones de Usuario */}
-          <div className="flex items-center gap-2 md:gap-4">
+          {/* --- Encabezado --- */}
+          <header className="flex justify-between items-center mb-6">
             
-            {/* Email del usuario (oculto en pantallas pequeñas) */}
-            <span className="hidden sm:inline text-gray-400 text-sm">
-              {currentUser ? currentUser.email : 'Admin'}
-            </span>
-            
-            {/* Botón de Perfil (Icono) */}
-            <Link 
-              to="/admin/profile"
-              title={t('admin_profile_tooltip')} // Tooltip
-              className="text-gray-400 hover:text-white p-2 rounded-full hover:bg-white/10 transition-colors"
-            >
-              <HiOutlineUserCircle className="w-6 h-6" />
-            </Link>
+            {/* Lado Izquierdo: Título */}
+            <h1 className="text-3xl font-bold text-orange-400">
+              {t('admin_title')}
+            </h1>
 
-            {/* Botón de Logout (Icono) */}
-            <button 
-              onClick={handleLogout}
-              title={t('admin_logout_tooltip')} // Tooltip
-              className="text-gray-400 hover:text-red-500 p-2 rounded-full hover:bg-white/10 transition-colors"
-            >
-              <HiOutlineLogout className="w-6 h-6" />
-            </button>
+            {/* Lado Derecho: Acciones de Usuario */}
+            <div className="flex items-center gap-2 md:gap-4">
+              
+              {/* Email del usuario (oculto en pantallas pequeñas) */}
+              <span className="hidden sm:inline text-gray-400 text-sm">
+                {currentUser ? currentUser.email : 'Admin'}
+              </span>
+              
+              {/* Botón de Perfil (Icono) */}
+              <Link 
+                to="/admin/profile"
+                title={t('admin_profile_tooltip')} // Tooltip
+                className="text-gray-400 hover:text-white p-2 rounded-full hover:bg-white/10 transition-colors"
+              >
+                <HiOutlineUserCircle className="w-6 h-6" />
+              </Link>
+
+              {/* Botón de Logout (Icono) */}
+              <button 
+                onClick={handleLogout}
+                title={t('admin_logout_tooltip')} // Tooltip
+                className="text-gray-400 hover:text-red-500 p-2 rounded-full hover:bg-white/10 transition-colors"
+              >
+                <HiOutlineLogout className="w-6 h-6" />
+              </button>
+            </div>
+          </header>
+
+          <hr className="border-gray-700/50 my-8"/>
+
+          {/* --- Cuadrícula de Navegación --- */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            
+            <DashboardCard 
+              to="/admin/blog"
+              title={t('admin_manage_blog')}
+              icon={<HiOutlineRss className="w-12 h-12" />}
+            />
+            
+            <DashboardCard 
+              to="/admin/portfolio"
+              title={t('admin_manage_portfolio')}
+              icon={<HiOutlineBriefcase className="w-12 h-12" />}
+            />
+
+            <DashboardCard 
+              to="/admin/experience"
+              title={t('admin_manage_experience')}
+              icon={<HiOutlineDocumentText className="w-12 h-12" />}
+            />
+            <DashboardCard 
+              to="/admin/contact"
+              title={t('admin_manage_contact')}
+              icon={<HiOutlineMail className="w-12 h-12" />}
+            />
           </div>
-        </header>
-
-        <hr className="border-gray-700/50 my-8"/>
-
-        {/* --- Cuadrícula de Navegación --- */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          
-          <DashboardCard 
-            to="/admin/blog"
-            title={t('admin_manage_blog')}
-            icon={<HiOutlineRss className="w-12 h-12" />}
-          />
-          
-          <DashboardCard 
-            to="/admin/portfolio"
-            title={t('admin_manage_portfolio')}
-            icon={<HiOutlineBriefcase className="w-12 h-12" />}
-          />
-
-          <DashboardCard 
-            to="/admin/experience"
-            title={t('admin_manage_experience')}
-            icon={<HiOutlineDocumentText className="w-12 h-12" />}
-          />
-          <DashboardCard 
-            to="/admin/contact"
-            title={t('admin_manage_contact')}
-            icon={<HiOutlineMail className="w-12 h-12" />}
-          />
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

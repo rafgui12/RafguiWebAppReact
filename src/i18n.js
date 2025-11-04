@@ -20,6 +20,7 @@ const translations = {
     contact_title: "Rafael Angulo Ealo",
     contact_description:"You can find me on these platforms or send me an email. Let's talk!",
     //Blog
+    blog_title: "Rafael's Website Blog",
     blog_filtering_by: "Filtering by",
     blog_filter_type_category: "category",
     blog_filter_type_year: "year",
@@ -59,6 +60,10 @@ const translations = {
     login_email: "Email",
     login_password: "Password",
     login_btn: "Login",
+    login_forgot_password: "Forgot your password?",
+    login_password_reset_sent: "Password reset email sent! Check your inbox.",
+    login_email_required_for_reset: "Please enter your email address above.",
+    login_password_reset_error: "Error sending reset email. Please try again.",
     //AdminPanel
     admin_title: "Admin Dashboard",
     admin_welcome: "Welcome",
@@ -180,8 +185,7 @@ const translations = {
     blog: "Blog",
     // Portfolio
     portfolio_title: "Portafolio",
-     portfolio_description:
-      "Bienvenido a mi portafolio, donde te invito a explorar la diversidad de proyectos y experiencias que han moldeado mi trayectoria profesional.",
+    portfolio_description:"Bienvenido a mi portafolio, donde te invito a explorar la diversidad de proyectos y experiencias que han moldeado mi trayectoria profesional.",
     tools_label: "Herramientas y Tecnologías",
     // Experience
     experience_title: "Experiencia",
@@ -209,6 +213,7 @@ const translations = {
     blog_no_years: "No hay años disponibles",
     blog_no_authors: "No hay autores disponibles",
     // BlogPostPage
+    blog_title: "Blog de Rafael",
     blog_post_not_found: "Post no encontrado.",
     blog_load_fail: "Error al cargar el post.",
     blog_oops_title: "Oops! Algo salió mal.",
@@ -230,6 +235,10 @@ const translations = {
     login_email: "Correo Electrónico",
     login_password: "Contraseña",
     login_btn: "Iniciar Sesión",
+    login_forgot_password: "¿Olvidaste tu contraseña?",
+    login_password_reset_sent: "¡Correo de reestablecimiento enviado! Revisa tu bandeja de entrada.",
+    login_email_required_for_reset: "Por favor, ingresa tu email arriba.",
+    login_password_reset_error: "Error al enviar el correo. Inténtalo de nuevo.",
     //AdminPanel
     admin_title: "Panel de Admin",
     admin_welcome: "Bienvenido",

@@ -2,6 +2,7 @@ import Footer from "../components/Footer";
 import useLanguage from "../../hooks/useLanguage";
 import { useProjects } from "../../services/projectService";
 import HeaderBack from "../components/HeaderBack";
+import SEO from "../../components/SEO";
 
 function PortfolioPage() {
   const { lang, t } = useLanguage();
@@ -17,6 +18,9 @@ function PortfolioPage() {
 
   return (
     <>
+      <SEO 
+        title={"Portfolio | " + t("portfolio_title")}
+      />
       <div className="relative min-h-screen bg-black text-white flex flex-col overflow-hidden">
         <div className="absolute inset-0 z-0 opacity-50 bg-gradient-to-b from-black via-black to-purple-900/40" />
         {/* Contenido principal (con z-index) */}

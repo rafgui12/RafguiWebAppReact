@@ -67,3 +67,7 @@ export const sendResetPasswordEmail = () => {
   if (!auth.currentUser) return Promise.reject(new Error("No user logged in"));
   return sendPasswordResetEmail(auth, auth.currentUser.email);
 };
+
+export const sendPublicPasswordResetEmail = (email) => {
+  return sendPasswordResetEmail(auth, email);
+};
