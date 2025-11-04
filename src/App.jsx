@@ -61,7 +61,7 @@ function App() {
           <Route path="portfolio/new" element={<ProjectForm />} />
           <Route path="portfolio/edit/:id" element={<ProjectForm />} />
         </Route>
-        {/* === 4. RUTA NOT FOUND (SIEMPRE AL FINAL) === */}
+        {/* === 4. RUTA NOT FOUND === */}
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </>
