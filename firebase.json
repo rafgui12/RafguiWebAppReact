@@ -16,6 +16,7 @@
       {
         "source": "/",
         "destination": "https://rafgui.com/blog", 
+        "type": 301,
         "host": "blog.rafgui.com"
       },
       {
