@@ -15,13 +15,13 @@
     "redirects": [
       {
         "source": "/:path*", 
-        "destination": "/blog/:path*",
+        "destination": "https://rafgui.com/blog/:path*",
         "type": 301,
         "host": "blog.rafgui.com"
       },
       {
         "source": "/:path*", 
-        "destination": "/admin/:path*",
+        "destination": "https://rafgui.com/admin/:path*", 
         "type": 301,
         "host": "admin.rafgui.com"
       }
