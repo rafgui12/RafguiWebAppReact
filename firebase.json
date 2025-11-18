@@ -11,6 +11,31 @@
         "source": "**",
         "destination": "/index.html"
       }
+    ],
+    "redirects": [
+      {
+        "source": "/",
+        "destination": "https://rafgui.com/blog", 
+        "host": "blog.rafgui.com"
+      },
+      {
+        "source": "/:path",
+        "destination": "https://rafgui.com/blog/:path", 
+        "type": 301,
+        "host": "blog.rafgui.com"
+      },
+      {
+        "source": "/",
+        "destination": "https://rafgui.com/admin", 
+        "type": 301,
+        "host": "admin.rafgui.com"
+      },
+      {
+        "source": "/:path",
+        "destination": "https://rafgui.com/admin/:path",
+        "type": 301,
+        "host": "admin.rafgui.com"
+      }
     ]
   }
 }
