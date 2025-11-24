@@ -25,12 +25,14 @@ import ProjectForm from "./pages/admin/porfolio/ProjectForm.jsx"
 import ManageContact from "./pages/admin/contact/ManageContact.jsx"
 // Ruta 404
 import NotFoundPage from "./pages/NotFoundPage/NotFoundPage.jsx"
+import AnalyticsTracker from "./components/AnalyticsTracker.jsx"
 
 
 function App() {
 
   return (
     <>
+      <AnalyticsTracker />
       <Routes>
         {/* === 1. TUS RUTAS PÚBLICAS === */}
         <Route path="/" element={<HomePage />} />

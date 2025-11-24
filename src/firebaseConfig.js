@@ -13,10 +13,14 @@ const firebaseConfig = {
 };
 
 // Inicializa Firebase y exporta la app
-export const app = initializeApp(firebaseConfig); 
+export const app = initializeApp(firebaseConfig);
 
 // Exporta la instancia de Realtime Database
 export const database = getDatabase(app);
 
 // Exporta la instancia de Auth
-export const auth = getAuth(app); 
+export const auth = getAuth(app);
+
+// Inicializa Analytics y exporta la instancia
+import { getAnalytics } from "firebase/analytics";
+export const analytics = getAnalytics(app);
