@@ -286,9 +286,20 @@ function BlogPostPage() {
                   {/* Muestra la opinión existente si existe */}
                   {myOpinion ? (
                     <div className="border-b border-gray-700/50 pb-4">
-                      <p className="text-gray-300 text-sm mb-1">
-                        {myOpinion.content?.[lang.toUpperCase()] || t('blog_opinion_not_available')}
-                      </p>
+                      <ReactMarkdown
+                        components={{
+                          a: ({ node, ...props }) => (
+                            <a 
+                              {...props} 
+                              className="text-orange-400 hover:underline" 
+                              target="_blank" 
+                              rel="noopener noreferrer" 
+                            />
+                          ),
+                        }}
+                      >
+                        {myOpinion.content?.[lang.toUpperCase()].replace(/\\n/g, '\n')}
+                      </ReactMarkdown>
                       <p className="text-xs text-gray-500 text-right">
                         {formatDate(myOpinion.createdAt)}
                       </p>
