@@ -19,6 +19,7 @@ export default defineConfig({
         removeStyleLinkTypeAttributes: true,
         useShortDoctype: true,
         minifyCSS: true,
+        minifyJS: true,
       },
     }),
   ],
@@ -35,7 +36,9 @@ export default defineConfig({
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom', 'react-router'],
-          firebase: ['firebase/app', 'firebase/analytics'],
+          firebase: ['firebase/app', 'firebase/analytics', 'firebase/auth', 'firebase/database'],
+          icons: ['react-icons', 'react-icons/hi', 'react-icons/fa', 'react-icons/io5'],
+          markdown: ['react-markdown'],
         },
       },
     },
