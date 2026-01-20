@@ -1,16 +1,30 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
+import vitePluginHtmlMinifierTerser from 'vite-plugin-html-minifier-terser'
 
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
     tailwindcss(),
-    react()
+    react(),
+    vitePluginHtmlMinifierTerser({
+      minifierOptions: {
+        collapseWhitespace: true,
+        keepClosingSlash: true,
+        removeComments: true,
+        removeRedundantAttributes: true,
+        removeScriptTypeAttributes: true,
+        removeStyleLinkTypeAttributes: true,
+        useShortDoctype: true,
+        minifyCSS: true,
+      },
+    }),
   ],
   build: {
     minify: 'terser',
+    cssMinify: true,
     terserOptions: {
       compress: {
         drop_console: true,
