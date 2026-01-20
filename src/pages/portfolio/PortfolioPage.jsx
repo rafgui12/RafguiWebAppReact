@@ -18,7 +18,7 @@ function PortfolioPage() {
 
   return (
     <>
-      <SEO 
+      <SEO
         title={"Portfolio | " + t("portfolio_title")}
       />
       <div className="relative min-h-screen bg-black text-white flex flex-col overflow-hidden">
@@ -52,6 +52,7 @@ function PortfolioPage() {
                       src={project.ImageHolder}
                       alt={project.Name[lang.toUpperCase()]}
                       className="w-32 h-32 object-contain rounded-lg"
+                      loading="lazy"
                     />
                   </div>
                   {/* (Contenido) */}
