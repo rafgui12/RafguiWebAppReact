@@ -11,6 +11,19 @@ const preview = {
         date: /Date$/i,
       },
     },
+    backgrounds: {
+      default: 'dark',
+      values: [
+        {
+          name: 'dark',
+          value: '#1a1a1a', // Adjust this color to match your app's dark theme
+        },
+        {
+          name: 'light',
+          value: '#ffffff',
+        },
+      ],
+    },
 
     a11y: {
       // 'todo' - show a11y violations in the test UI only
