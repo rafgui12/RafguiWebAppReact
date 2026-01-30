@@ -77,6 +77,21 @@ function BlogPostPage() {
     e.preventDefault();
     if (!newComment.trim()) return; // No enviar si está vacío
 
+    // Rate Limiting Check
+    const RATE_LIMIT_MINUTES = 30;
+    const lastCommentKey = `lastCommentTime_${postId}`;
+    const lastCommentTime = localStorage.getItem(lastCommentKey);
+
+    if (lastCommentTime) {
+      const timeDiff = new Date() - new Date(lastCommentTime);
+      const minutesDiff = timeDiff / (1000 * 60);
+
+      if (minutesDiff < RATE_LIMIT_MINUTES) {
+        setSubmitError(t('blog_rate_limit_error') || `Please wait ${Math.ceil(RATE_LIMIT_MINUTES - minutesDiff)} minutes before posting another comment.`);
+        return;
+      }
+    }
+
     setIsSubmitting(true);
     setSubmitError(null);
 
@@ -85,9 +100,25 @@ function BlogPostPage() {
       createdAt: new Date().toISOString()
     };
 
+    // Fetch IP and add to comment data
+    try {
+      const ipRes = await fetch("https://api.ipify.org?format=json");
+      const ipData = await ipRes.json();
+      commentData.userIp = ipData.ip;
+    } catch (err) {
+      console.warn("Could not fetch IP:", err);
+      // We proceed without IP or with a placeholder if strictly required, but for now we proceed without it.
+      // If rules require it, we might want to handle this differently. 
+      // Given the plan to log it, we'll try to include it.
+    }
+
     try {
       const newCommentRef = await addCommentToPost(postId, commentData);
       const newCommentId = newCommentRef.key;
+
+      // Update LocalStorage ONLY on success
+      localStorage.setItem(lastCommentKey, new Date().toISOString());
+
       setPost(prevPost => ({
         ...prevPost,
         comments: {
