@@ -77,6 +77,21 @@ function BlogPostPage() {
     e.preventDefault();
     if (!newComment.trim()) return; // No enviar si está vacío
 
+    // Rate Limiting Check
+    const RATE_LIMIT_MINUTES = 30;
+    const lastCommentKey = `lastCommentTime_${postId}`;
+    const lastCommentTime = localStorage.getItem(lastCommentKey);
+
+    if (lastCommentTime) {
+      const timeDiff = new Date() - new Date(lastCommentTime);
+      const minutesDiff = timeDiff / (1000 * 60);
+
+      if (minutesDiff < RATE_LIMIT_MINUTES) {
+        setSubmitError(t('blog_rate_limit_error') || `Please wait ${Math.ceil(RATE_LIMIT_MINUTES - minutesDiff)} minutes before posting another comment.`);
+        return;
+      }
+    }
+
     setIsSubmitting(true);
     setSubmitError(null);
 
@@ -88,6 +103,10 @@ function BlogPostPage() {
     try {
       const newCommentRef = await addCommentToPost(postId, commentData);
       const newCommentId = newCommentRef.key;
+
+      // Update LocalStorage ONLY on success
+      localStorage.setItem(lastCommentKey, new Date().toISOString());
+
       setPost(prevPost => ({
         ...prevPost,
         comments: {

@@ -52,6 +52,7 @@ export const en = {
     blog_your_opinion: "Your Opinion",
     blog_form_placeholder: "Write your opinion here...",
     blog_submit_error: "Error saving your opinion. Please try again.",
+    blog_rate_limit_error: "Please wait 30 minutes before posting another comment on this post.",
     blog_submit_saving: "Saving...",
     blog_submit_save: "Save Opinion",
     //LoginPage

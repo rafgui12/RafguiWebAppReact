@@ -52,6 +52,7 @@ export const es = {
     blog_your_opinion: "Tu Opinión",
     blog_form_placeholder: "Escribe tu opinión aquí...",
     blog_submit_error: "Hubo un error al guardar tu opinión. Inténtalo de nuevo.",
+    blog_rate_limit_error: "Debes esperar 30 minutos antes de enviar un nuevo comentario en este post.",
     blog_submit_saving: "Guardando...",
     blog_submit_save: "Guardar Opinión",
     //LoginPage
