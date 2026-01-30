@@ -9,6 +9,7 @@ const ExperiencePage = lazy(() => import("./pages/experience/ExperiencePage.jsx"
 const ContactPage = lazy(() => import("./pages/contact/ContactPage.jsx"));
 const BlogPage = lazy(() => import("./pages/blog/BlogPage.jsx"));
 const BlogPostPage = lazy(() => import("./pages/blog/BlogPostPage.jsx"));
+const PrivacyPage = lazy(() => import("./pages/PrivacyPage.jsx"));
 
 //Rutas Protegidas
 import ProtectedRoute from "./components/ProtectedRoute.jsx"
@@ -53,6 +54,7 @@ function App() {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/blog/:postId" element={<BlogPostPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
           {/* === 2. RUTA DE LOGIN (PÚBLICA) === */}
           <Route path="/login" element={<LoginPage />} />
           {/* === 3. RUTAS PROTEGIDAS (ADMIN) === */}

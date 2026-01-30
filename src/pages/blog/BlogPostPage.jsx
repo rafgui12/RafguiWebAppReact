@@ -100,6 +100,18 @@ function BlogPostPage() {
       createdAt: new Date().toISOString()
     };
 
+    // Fetch IP and add to comment data
+    try {
+      const ipRes = await fetch("https://api.ipify.org?format=json");
+      const ipData = await ipRes.json();
+      commentData.userIp = ipData.ip;
+    } catch (err) {
+      console.warn("Could not fetch IP:", err);
+      // We proceed without IP or with a placeholder if strictly required, but for now we proceed without it.
+      // If rules require it, we might want to handle this differently. 
+      // Given the plan to log it, we'll try to include it.
+    }
+
     try {
       const newCommentRef = await addCommentToPost(postId, commentData);
       const newCommentId = newCommentRef.key;

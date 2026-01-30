@@ -7,7 +7,7 @@
                 "comments": {
                     "$commentId": {
                         ".write": "!data.exists() && newData.exists()",
-                        ".validate": "newData.hasChildren(['content', 'authorName', 'createdAt']) && newData.child('content').isString() && newData.child('content').val().length > 0 && newData.child('content').val().length <= 1000 && newData.child('authorName').isString() && newData.child('authorName').val().length <= 50"
+                        ".validate": "newData.hasChildren(['content', 'authorName', 'createdAt']) && newData.child('content').isString() && newData.child('content').val().length > 0 && newData.child('content').val().length <= 1000 && newData.child('authorName').isString() && newData.child('authorName').val().length <= 50 && (!newData.child('userIp').exists() || newData.child('userIp').isString())"
                     }
                 }
             }
