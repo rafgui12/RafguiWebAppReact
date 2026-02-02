@@ -1,24 +1,25 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router';
 import useLanguage from '../../../hooks/useLanguage';
-import { 
-  getBlogPostById, 
-  createBlogPost, 
+import { useAuth } from '../../../context/AuthContext';
+import {
+  getBlogPostById,
+  createBlogPost,
   updateBlogPost,
-  deleteCommentFromPost, // <-- Servicio para borrar comentarios
-  setMyOpinionForPost   // <-- Servicio para tu opinión
+  deleteCommentFromPost,
+  setMyOpinionForPost,
+  addCommentToPost // <-- ADDED THIS
 } from '../../../services/blogService';
-import { HiOutlinePhotograph, HiOutlineTrash } from 'react-icons/hi';
+import { HiOutlinePhotograph, HiOutlineTrash, HiPaperAirplane } from 'react-icons/hi'; // Added HiPaperAirplane
 
-// --- Constantes de Cloudinary ---
 const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-// ¡NECESITAMOS UN NUEVO PRESET PARA EL BLOG!
 const CLOUDINARY_BLOG_PRESET = import.meta.env.VITE_CLOUDINARY_BLOG_PRESET;
 
 const BlogForm = () => {
   const { t, lang } = useLanguage();
+  const { currentUser } = useAuth(); // <-- GET CURRENT USER
   const navigate = useNavigate();
-  const { id } = useParams(); // El ID del post (si estamos editando)
+  const { id } = useParams();
   const isNew = !id;
 
   const [formData, setFormData] = useState({
@@ -26,24 +27,27 @@ const BlogForm = () => {
     shortDescription: { ES: '', EN: '' },
     content: { ES: '', EN: '' },
     myOpinion: { ES: '', EN: '' },
-    categories: '', // Se maneja como string
+    categories: '',
     author: '',
     imageUrl: '',
     commentsEnabled: true,
   });
-  
+
   const [postImageFile, setPostImageFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState('');
-  const [comments, setComments] = useState([]); // Lista de comentarios de visitantes
+  const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Carga los datos del post si estamos editando
+  // State for new admin comment
+  const [newAdminComment, setNewAdminComment] = useState('');
+  const [isSubmittingComment, setIsSubmittingComment] = useState(false);
+
+  // ... useEffect for loading post data ...
   useEffect(() => {
     if (!isNew) {
       setLoading(true);
       getBlogPostById(id).then(post => {
         if (post) {
-          // Formatea los datos para el formulario
           const postData = {
             ...post,
             title: post.title || { ES: '', EN: '' },
@@ -55,8 +59,7 @@ const BlogForm = () => {
           };
           setFormData(postData);
           setPreviewUrl(post.imageUrl || '');
-          
-          // Convierte el objeto de comentarios en un array
+
           if (post.comments) {
             const commentsArray = Object.keys(post.comments).map(key => ({
               id: key,
@@ -70,17 +73,16 @@ const BlogForm = () => {
     }
   }, [id, isNew]);
 
-  // --- Handlers del Formulario ---
-
+  // ... form handlers (handleI18nChange, handleSimpleChange, handleFileChange) ...
   const handleI18nChange = (e) => {
     const { name, value } = e.target;
-    const [fieldName, lang] = name.split('.'); // ej. "title.ES"
+    const [fieldName, lang] = name.split('.');
     setFormData(prev => ({
       ...prev,
       [fieldName]: { ...prev[fieldName], [lang]: value }
     }));
   };
-  
+
   const handleSimpleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({
@@ -92,24 +94,24 @@ const BlogForm = () => {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setPostImageFile(file); 
+      setPostImageFile(file);
       setPreviewUrl(URL.createObjectURL(file));
     }
   };
 
   const handleSubmit = async (e) => {
+    // ... same submit logic ...
     e.preventDefault();
     setLoading(true);
 
     let finalData = { ...formData };
 
     try {
-      // 1. Sube la imagen si hay una nueva
       if (postImageFile) {
         const cloudFormData = new FormData();
         cloudFormData.append('file', postImageFile);
-        cloudFormData.append('upload_preset', CLOUDINARY_BLOG_PRESET); 
-        
+        cloudFormData.append('upload_preset', CLOUDINARY_BLOG_PRESET);
+
         const response = await fetch(
           `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
           { method: 'POST', body: cloudFormData }
@@ -119,24 +121,21 @@ const BlogForm = () => {
           finalData.imageUrl = data.secure_url;
         }
       }
-      
-      // 2. Separa 'myOpinion' del resto
+
       const { myOpinion, ...postData } = finalData;
-      
-      // 3. Guarda el Post Principal
+
       let postId = id;
       if (isNew) {
         const newPostRef = await createBlogPost(postData);
-        postId = newPostRef.key; // Obtiene el ID del nuevo post
+        postId = newPostRef.key;
       } else {
         await updateBlogPost(id, postData);
       }
-      
-      // 4. Guarda "My Opinion" usando el ID
+
       if (postId) {
         await setMyOpinionForPost(postId, { content: myOpinion });
       }
-      
+
       navigate('/admin/blog');
 
     } catch (err) {
@@ -145,15 +144,42 @@ const BlogForm = () => {
     }
   };
 
-  // --- Handler para Borrar Comentarios ---
   const handleDeleteComment = (commentId) => {
     if (window.confirm(t('admin_post_delete_comment'))) {
       deleteCommentFromPost(id, commentId)
         .then(() => {
-          // Actualiza la lista de comentarios en el estado local
           setComments(prev => prev.filter(c => c.id !== commentId));
         })
         .catch(err => console.error("Error al borrar comentario:", err));
+    }
+  };
+
+  // --- NEW: Handle Add Comment as Admin ---
+  const handleAddAdminComment = async (e) => {
+    e.preventDefault();
+    if (!newAdminComment.trim()) return;
+
+    setIsSubmittingComment(true);
+
+    // Determine author name
+    const authorName = currentUser?.displayName || currentUser?.email || "Admin";
+
+    const commentData = {
+      content: newAdminComment,
+      authorName: `${authorName} (Admin)`,
+      createdAt: new Date().toISOString(),
+      isAdmin: true // Flag to potentially style differently later
+    };
+
+    try {
+      const newRef = await addCommentToPost(id, commentData);
+      setComments(prev => [...prev, { id: newRef.key, ...commentData }]);
+      setNewAdminComment('');
+    } catch (error) {
+      console.error("Failed to add admin comment:", error);
+      alert(t('blog_submit_error'));
+    } finally {
+      setIsSubmittingComment(false);
     }
   };
 
@@ -175,10 +201,8 @@ const BlogForm = () => {
           </Link>
         </header>
 
-        {/* --- EL FORMULARIO --- */}
         <form onSubmit={handleSubmit} className="bg-white/10 p-6 rounded-lg space-y-6">
-          
-          {/* Título (ES y EN) */}
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-gray-400 mb-2">{t('admin_post_title')} (ES)</label>
@@ -189,8 +213,7 @@ const BlogForm = () => {
               <input type="text" name="title.EN" value={formData.title.EN} onChange={handleI18nChange} className="w-full p-3 bg-white/10 rounded-lg border border-gray-700" />
             </div>
           </div>
-          
-          {/* Autor y Categorías */}
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-gray-400 mb-2">{t('admin_post_author')}</label>
@@ -202,7 +225,6 @@ const BlogForm = () => {
             </div>
           </div>
 
-          {/* Cargador de Imagen */}
           <div>
             <label className="block text-gray-400 mb-2">{t('admin_post_image')}</label>
             <div className="flex items-center gap-4">
@@ -217,7 +239,6 @@ const BlogForm = () => {
             </div>
           </div>
 
-          {/* Descripción Corta (ES y EN) */}
           <div>
             <label className="block text-gray-400 mb-2">{t('admin_post_short_desc')} (ES)</label>
             <textarea name="shortDescription.ES" value={formData.shortDescription.ES} onChange={handleI18nChange} rows="3" className="w-full p-3 bg-white/10 rounded-lg border border-gray-700" />
@@ -227,7 +248,6 @@ const BlogForm = () => {
             <textarea name="shortDescription.EN" value={formData.shortDescription.EN} onChange={handleI18nChange} rows="3" className="w-full p-3 bg-white/10 rounded-lg border border-gray-700" />
           </div>
 
-          {/* Contenido Principal (ES y EN) */}
           <div>
             <label className="block text-gray-400 mb-2">{t('admin_post_content')} (ES)</label>
             <textarea name="content.ES" value={formData.content.ES} onChange={handleI18nChange} rows="10" className="w-full p-3 bg-white/10 rounded-lg border border-gray-700" />
@@ -237,7 +257,6 @@ const BlogForm = () => {
             <textarea name="content.EN" value={formData.content.EN} onChange={handleI18nChange} rows="10" className="w-full p-3 bg-white/10 rounded-lg border border-gray-700" />
           </div>
 
-          {/* Mi Opinión (ES y EN) */}
           <div>
             <label className="block text-gray-400 mb-2">{t('admin_post_opinion')} (ES)</label>
             <textarea name="myOpinion.ES" value={formData.myOpinion.ES} onChange={handleI18nChange} rows="3" className="w-full p-3 bg-white/10 rounded-lg border border-gray-700" />
@@ -247,18 +266,16 @@ const BlogForm = () => {
             <textarea name="myOpinion.EN" value={formData.myOpinion.EN} onChange={handleI18nChange} rows="3" className="w-full p-3 bg-white/10 rounded-lg border border-gray-700" />
           </div>
 
-          {/* Checkbox 'commentsEnabled' */}
           <div className="flex items-center pt-4">
             <input
-              type="checkbox" name="commentsEnabled" id="commentsEnabled" 
-              checked={formData.commentsEnabled} 
+              type="checkbox" name="commentsEnabled" id="commentsEnabled"
+              checked={formData.commentsEnabled}
               onChange={handleSimpleChange}
               className="w-5 h-5 bg-gray-700 border-gray-600 rounded"
             />
             <label className="text-gray-300 ml-3" htmlFor="commentsEnabled">{t('admin_post_comments_enable')}</label>
           </div>
 
-          {/* Botón Guardar */}
           <div className="flex justify-end gap-4 pt-4">
             <button type="submit" disabled={loading} className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg transition">
               {loading ? "..." : t('admin_save')}
@@ -270,6 +287,30 @@ const BlogForm = () => {
         {!isNew && (
           <div className="bg-white/10 p-6 rounded-lg space-y-4 mt-8">
             <h2 className="text-2xl font-semibold text-purple-400 mb-6">{t('admin_post_comments')}</h2>
+
+            {/* Add New Comment Form (ADMIN MODE) */}
+            <div className="mb-6 p-4 bg-white/5 rounded-lg border border-gray-700/50">
+              <h3 className="text-sm uppercase tracking-wide text-gray-400 mb-3 font-bold">
+                Agregar comentario como Admin
+              </h3>
+              <form onSubmit={handleAddAdminComment} className="flex gap-2">
+                <input
+                  type="text"
+                  value={newAdminComment}
+                  onChange={(e) => setNewAdminComment(e.target.value)}
+                  placeholder="Escribe un comentario..."
+                  className="flex-1 p-2 bg-black/40 border border-gray-600 rounded text-white text-sm"
+                />
+                <button
+                  type="submit"
+                  disabled={isSubmittingComment || !newAdminComment.trim()}
+                  className="bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-white p-2 rounded transition"
+                >
+                  <HiPaperAirplane className="w-5 h-5 rotate-90" />
+                </button>
+              </form>
+            </div>
+
             {comments.length === 0 ? (
               <p className="text-gray-400">{t('admin_post_no_comments')}</p>
             ) : (
@@ -277,10 +318,14 @@ const BlogForm = () => {
                 {comments.map(comment => (
                   <div key={comment.id} className="bg-white/5 p-4 rounded-lg flex justify-between items-start">
                     <div>
-                      <p className="font-semibold">{comment.authorName || 'Anónimo'}</p>
-                      <p className="text-sm text-gray-300">{comment.content}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="font-semibold text-orange-200">{comment.authorName || 'Anónimo'}</p>
+                        {comment.isAdmin && <span className="text-xs bg-purple-900 text-purple-200 px-1 rounded border border-purple-500">ADMIN</span>}
+                      </div>
+                      <p className="text-sm text-gray-300 mt-1">{comment.content}</p>
+                      <span className="text-xs text-gray-500 block mt-2">{new Date(comment.createdAt).toLocaleString()}</span>
                     </div>
-                    <button 
+                    <button
                       onClick={() => handleDeleteComment(comment.id)}
                       title={t('admin_delete')}
                       className="p-2 text-gray-400 hover:text-red-500 hover:bg-white/10 rounded flex-shrink-0"
